@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="200" viewBox="0 0 900 200" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+  <style>
+    .bg { fill: #0d1117; }
+    .node { fill: #161b22; stroke: #30363d; stroke-width: 1.5; }
+    .label { fill: #c9d1d9; font-size: 13px; }
+    .sub { fill: #8b949e; font-size: 10px; }
+    .title { fill: #e6edf3; font-size: 22px; font-weight: 600; }
+    .tag { fill: #8b949e; font-size: 12px; }
+    .wire { stroke: #30363d; stroke-width: 2; fill: none; }
+    .pulse { fill: #58a6ff; }
+    .glow { fill: none; stroke-width: 2; opacity: 0; }
+    .glow-blue { stroke: #58a6ff; }
+    .glow-amber { stroke: #d29922; }
+    .glow-green { stroke: #3fb950; }
+    .retry { stroke: #d29922; stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; opacity: 0; }
+    .retry-label { fill: #d29922; font-size: 10px; opacity: 0; }
+    .check { stroke: #3fb950; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round;
+             stroke-dasharray: 40; stroke-dashoffset: 40; }
+    .cursor { fill: #58a6ff; animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #ffffff; } .node { fill: #f6f8fa; stroke: #d0d7de; }
+      .label { fill: #24292f; } .title { fill: #1f2328; } .wire { stroke: #d0d7de; }
+      .sub, .tag { fill: #57606a; }
+    }
+  </style>
+
+  <rect class="bg" width="900" height="200" rx="12"/>
+
+  <text class="title" x="40" y="48">Kai · LLM agents that have to be correct<tspan class="cursor">_</tspan></text>
+  <text class="tag" x="40" y="72">retrieval · structured generation · validation — for industrial &amp; networked systems</text>
+
+  <!--
+    Timeline (one 6 s cycle, fractions of the cycle):
+      0.00-0.08  pulse: NL -> retrieve
+      0.08-0.18  retrieve active
+      0.18-0.26  pulse: retrieve -> generate
+      0.26-0.36  generate active
+      0.36-0.44  pulse: generate -> validate
+      0.44-0.54  validate FAILS (amber)
+      0.54-0.70  pulse: retry loop back to generate
+      0.70-0.80  generate active (regenerate)
+      0.80-0.88  pulse: generate -> validate
+      0.88-1.00  validate PASSES (green) + checkmark draws
+  -->
+  <g transform="translate(40,105)">
+    <rect class="node" x="0"   y="0" width="150" height="56" rx="8"/>
+    <rect class="node" x="210" y="0" width="150" height="56" rx="8"/>
+    <rect class="node" x="420" y="0" width="150" height="56" rx="8"/>
+    <rect class="node" x="630" y="0" width="150" height="56" rx="8"/>
+
+    <!-- active-state overlays (SMIL so they stay in sync with the pulse) -->
+    <rect class="glow glow-blue" x="0" y="0" width="150" height="56" rx="8">
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="1;0" keyTimes="0;0.08"/>
+    </rect>
+    <rect class="glow glow-blue" x="210" y="0" width="150" height="56" rx="8">
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="0;1;0" keyTimes="0;0.08;0.18"/>
+    </rect>
+    <rect class="glow glow-blue" x="420" y="0" width="150" height="56" rx="8">
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="0;1;0;1;0" keyTimes="0;0.26;0.36;0.70;0.80"/>
+    </rect>
+    <rect class="glow glow-amber" x="630" y="0" width="150" height="56" rx="8">
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="0;1;0" keyTimes="0;0.44;0.54"/>
+    </rect>
+    <rect class="glow glow-green" x="630" y="0" width="150" height="56" rx="8">
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="0;1" keyTimes="0;0.88"/>
+    </rect>
+
+    <text class="label" x="75"  y="25" text-anchor="middle">NL request</text>
+    <text class="sub"   x="75"  y="42" text-anchor="middle">"run temp sweep on lot 42"</text>
+    <text class="label" x="285" y="25" text-anchor="middle">retrieve</text>
+    <text class="sub"   x="285" y="42" text-anchor="middle">BM25 + dense · 7k-page spec</text>
+    <text class="label" x="495" y="25" text-anchor="middle">generate</text>
+    <text class="sub"   x="495" y="42" text-anchor="middle">structured tool-use output</text>
+    <text class="label" x="705" y="25" text-anchor="middle">validate</text>
+    <text class="sub"   x="705" y="42" text-anchor="middle">schema + graph + LLM judge</text>
+
+    <path class="wire" d="M150 28 H210"/>
+    <path class="wire" d="M360 28 H420"/>
+    <path class="wire" d="M570 28 H630"/>
+
+    <!-- self-correct loop: validate -> generate (shown only while the retry pulse travels) -->
+    <path class="retry" d="M705 56 V72 H495 V56">
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="0;1;0" keyTimes="0;0.44;0.72"/>
+    </path>
+    <text class="retry-label" x="600" y="84" text-anchor="middle">schema violation → regenerate
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="0;1;0" keyTimes="0;0.44;0.72"/>
+    </text>
+
+    <!-- pulse: travels only on wires; hidden while a node is "processing" -->
+    <!-- path segments (cumulative length / 482 total):
+         wire1   0   -> 60   (0.1245)
+         wire2   60  -> 120  (0.2490)
+         wire3   120 -> 180  (0.3734)
+         retry   180 -> 422  (0.8755)
+         wire3   422 -> 482  (1.0) -->
+    <circle class="pulse" r="5">
+      <animateMotion dur="6s" repeatCount="indefinite" calcMode="linear"
+        path="M150 28 H210 M360 28 H420 M570 28 H630 M705 56 V72 H495 V56 M570 28 H630"
+        keyTimes="0;0.08;0.18;0.26;0.36;0.44;0.54;0.70;0.80;0.88;1"
+        keyPoints="0;0.1245;0.1245;0.2490;0.2490;0.3734;0.3734;0.8755;0.8755;1;1"/>
+      <animate attributeName="opacity" dur="6s" repeatCount="indefinite" calcMode="discrete"
+        values="1;0;1;0;1;0;1;0;1;0"
+        keyTimes="0;0.08;0.18;0.26;0.36;0.44;0.54;0.70;0.80;0.88"/>
+    </circle>
+
+    <!-- checkmark drawn when validation finally passes -->
+    <path class="check" d="M790 28 l9 9 l17 -18">
+      <animate attributeName="stroke-dashoffset" dur="6s" repeatCount="indefinite" calcMode="linear"
+        values="40;40;0;0" keyTimes="0;0.88;0.95;1"/>
+    </path>
+  </g>
+</svg>
