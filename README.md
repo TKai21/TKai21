@@ -1,3 +1,4 @@
+<img src="./header.svg" width="100%" alt="Kai — LLM agents that have to be correct" />
 ### Hi, I'm Kai (Ting-Kai Wu) 👋
 
 MS Computer Engineering @ USC (May 2027) · I build **LLM agent systems that have to be correct**, not just fluent: retrieval, structured generation, and validation for industrial and networked systems.
