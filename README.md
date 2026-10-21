@@ -1,4 +1,4 @@
-<img src="./header.svg" width="100%" alt="Kai — LLM agents that have to be correct" />
+<img src="./header(1).svg" width="100%" alt="Kai — LLM agents that have to be correct" />
 
 ### Hi, I'm Kai (Ting-Kai Wu) 👋
 
